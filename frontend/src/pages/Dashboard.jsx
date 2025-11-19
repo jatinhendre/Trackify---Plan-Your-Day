@@ -1,9 +1,18 @@
 import { useContext, useEffect, useState } from "react";
 import axios from "../utils/axiosinstance";
 import { AuthContext } from "../context/AuthContext";
+import { ThemeContext } from "../context/ThemeContext";
+
+import TaskCard from "../components/Taskcard";
+import TaskForm from "../components/Taskform";
+import SearchBar from "../components/Searchbar";
+import FilterDropdown from "../components/FilterDropdown";
+import ThemeToggle from "../components/ThemeToggle";
 
 export default function Dashboard() {
   const { logout } = useContext(AuthContext);
+useContext(ThemeContext);
+
 
   const [tasks, setTasks] = useState([]);
   const [form, setForm] = useState({
@@ -81,99 +90,50 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+      
+      {/* Top Bar */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <button
-          onClick={logout}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Logout
-        </button>
+        <h1 className="text-3xl font-bold dark:text-white">Tracikfy</h1>
+
+        <div className="flex gap-3">
+          <ThemeToggle />
+
+          <button
+            onClick={logout}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
+      {/* Search + Filter */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="Search tasks..."
-          className="p-2 border rounded w-full md:w-1/2"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        <select
-          className="p-2 border rounded w-full md:w-1/4"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="all">All Priorities</option>
-          <option value="high">High Priority</option>
-          <option value="medium">Medium Priority</option>
-          <option value="low">Low Priority</option>
-        </select>
+        <SearchBar search={search} setSearch={setSearch} />
+        <FilterDropdown filter={filter} setFilter={setFilter} />
       </div>
 
-      <form onSubmit={handleSubmit} className="mb-6 space-y-3">
-        <input
-          name="title"
-          placeholder="Task title"
-          className="w-full p-2 border rounded"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-          required
-        />
+      {/* Task Form */}
+      <TaskForm
+        form={form}
+        setForm={setForm}
+        editingId={editingId}
+        handleSubmit={handleSubmit}
+      />
 
-        <textarea
-          name="description"
-          placeholder="Task description"
-          className="w-full p-2 border rounded"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-        ></textarea>
-
-        <select
-          className="p-2 border rounded w-full"
-          value={form.priority}
-          onChange={(e) => setForm({ ...form, priority: e.target.value })}
-        >
-          <option value="high">High Priority</option>
-          <option value="medium">Medium Priority</option>
-          <option value="low">Low Priority</option>
-        </select>
-
-        <button className="bg-blue-600 text-white px-6 py-2 rounded">
-          {editingId ? "Update Task" : "Add Task"}
-        </button>
-      </form>
-
+      {/* Task List */}
       <div className="grid gap-4">
         {filteredTasks.map((task) => (
-          <div
+          <TaskCard
             key={task._id}
-            className="p-4 bg-white rounded shadow flex justify-between"
-          >
-            <div>
-              <h3 className="font-bold">{task.title}</h3>
-              <p>{task.description}</p>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleEdit(task)}
-                className="bg-yellow-500 text-white px-3 py-1 rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(task._id)}
-                className="bg-red-600 text-white px-3 py-1 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+            task={task}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         ))}
       </div>
+
     </div>
   );
 }
