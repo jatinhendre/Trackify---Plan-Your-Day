@@ -21,6 +21,16 @@ export default function Signup() {
     e.preventDefault();
 
     try {
+        const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+if (!passwordRegex.test(form.password)) {
+  alert(
+    "Password must be 8+ chars and include uppercase, lowercase, number, and special character."
+  );
+  return;
+}
+
       await axios.post("/auth/signup", form);
       navigate("/login");
     } catch (err) {
