@@ -9,20 +9,25 @@ const taskRoutes = require("./routes/task.routes");
 const userRoutes = require("./routes/user.routes");
 
 const app = express();
-app.use(cors({
-  origin: "https://trackify-plan-your-day.vercel.app",
-  methods: "GET,POST,PUT,DELETE",
-  allowedHeaders: "Content-Type,Authorization",
-  credentials: true,
-}));
-app.options("*", (req, res) => {
-  res.sendStatus(200);
-});
+
+// CORS FIX
+app.use(
+  cors({
+    origin: "https://trackify-plan-your-day.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// Allow all preflight requests
+app.options("*", cors());
 
 app.use(express.json());
 
 connectDB();
 
+// ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/user", userRoutes);
