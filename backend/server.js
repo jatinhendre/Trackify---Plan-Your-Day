@@ -1,10 +1,12 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/auth.routes");
 const taskRoutes = require("./routes/task.routes");
+const userRoutes = require("./routes/user.routes");
 
 const app = express();
 app.use(cors({
@@ -12,7 +14,7 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 }));
-app.use('*', cors());
+app.options('*', cors());
 
 
 app.use(express.json());
@@ -21,6 +23,7 @@ connectDB();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/user", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend working!");

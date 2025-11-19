@@ -88,13 +88,23 @@ useContext(ThemeContext);
 
     return matchSearch && matchFilter;
   });
+   
+  const [profile, setProfile] = useState(null);
 
+const loadProfile = async () => {
+  const res = await axios.get("/user/me");
+  setProfile(res.data);
+};
+
+useEffect(() => {
+  loadProfile();
+}, []);
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
       
       {/* Top Bar */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold dark:text-white">Tracikfy</h1>
+        <h1 className="text-3xl font-bold dark:text-white">Trackify</h1>
 
         <div className="flex gap-3">
           <ThemeToggle />
@@ -107,14 +117,18 @@ useContext(ThemeContext);
           </button>
         </div>
       </div>
+    {profile && (
+  <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded shadow">
+    <h2 className="text-xl font-semibold dark:text-white">Welcome, {profile.name}</h2>
+    <p className="dark:text-gray-300">{profile.email}</p>
+  </div>
+)}
 
-      {/* Search + Filter */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <SearchBar search={search} setSearch={setSearch} />
         <FilterDropdown filter={filter} setFilter={setFilter} />
       </div>
 
-      {/* Task Form */}
       <TaskForm
         form={form}
         setForm={setForm}
@@ -122,7 +136,6 @@ useContext(ThemeContext);
         handleSubmit={handleSubmit}
       />
 
-      {/* Task List */}
       <div className="grid gap-4">
         {filteredTasks.map((task) => (
           <TaskCard
