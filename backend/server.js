@@ -10,10 +10,14 @@ const userRoutes = require("./routes/user.routes");
 
 const app = express();
 app.use(cors({
-  origin: ["https://trackify-plan-your-day.vercel.app"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: "https://trackify-plan-your-day.vercel.app",
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type,Authorization",
   credentials: true,
 }));
+app.options("*", (req, res) => {
+  res.sendStatus(200);
+});
 
 app.use(express.json());
 
